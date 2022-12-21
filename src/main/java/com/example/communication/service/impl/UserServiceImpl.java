@@ -3,6 +3,7 @@ import com.example.communication.dto.ProductDto;
 import com.example.communication.dto.ResponseDto;
 import com.example.communication.dto.UserDto;
 import com.example.communication.entity.User;
+import com.example.communication.exception.NoSuchProductExistsException;
 import com.example.communication.repository.UserRepository;
 import com.example.communication.service.UserService;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     public ResponseDto getUser(Long userId) {
 
         ResponseDto responseDto = new ResponseDto();
+
         try {
             User user = userRepository.findById(userId).get();
             UserDto userDto = mapToUser(user);
@@ -41,16 +43,16 @@ public class UserServiceImpl implements UserService {
             ProductDto productDto = responseEntity.getBody();
 
             System.out.println(responseEntity.getStatusCode());
-
             responseDto.setUser(userDto);
             responseDto.setProduct(productDto);
 
-            return responseDto;
         }
-        catch(NoSuchElementException e)
+        catch(Exception e)
         {
-            throw new NoSuchElementException("No employee found !!");
+            System.out.println(e.getMessage());
+            throw new NoSuchProductExistsException("No product found with Productid saved for this user ");
         }
+        return responseDto;
     }
 
     @Override
